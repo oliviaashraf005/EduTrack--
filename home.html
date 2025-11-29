@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEPI Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9ff;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 80px;
+            background: white;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: 800;
+            color: #4c63d2;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logo-accent {
+            color: #4c63d2;
+        }
+
+        .logo:hover .logo-text {
+            transform: scale(1.05);
+        }
+
+        .nav-center {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            list-style: none;
+            margin-right: 20px;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            font-size: 16px;
+            padding: 8px 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4c63d2, #764ba2);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover {
+            color: #4c63d2;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .depi-brand {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4c63d2;
+            letter-spacing: 1px;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #4c63d2, #667eea);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(76, 99, 210, 0.3);
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #3b4fd6, #5a73ea);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 99, 210, 0.4);
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+
+        .dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            min-width: 220px;
+            overflow: hidden;
+            border: 1px solid rgba(76, 99, 210, 0.1);
+        }
+
+        .dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown.active .dropdown-item {
+            animation: slideInLeft 0.4s ease forwards;
+        }
+
+        .dropdown.active .dropdown-item:nth-child(1) { animation-delay: 0.1s; }
+        .dropdown.active .dropdown-item:nth-child(2) { animation-delay: 0.15s; }
+        .dropdown.active .dropdown-item:nth-child(3) { animation-delay: 0.2s; }
+        .dropdown.active .dropdown-item:nth-child(4) { animation-delay: 0.25s; }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .dropdown-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, #4c63d2, #667eea);
+            transition: width 0.3s ease;
+        }
+
+        .dropdown-item:hover::before {
+            width: 4px;
+        }
+
+        .dropdown-item:hover {
+            color: #4c63d2;
+            background: rgba(76, 99, 210, 0.05);
+            transform: translateX(8px);
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 80px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+            min-height: 80vh;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .welcome-text {
+            color: #4c63d2;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.2s;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.4s;
+        }
+
+        .hero-title .accent {
+
+  
+  display: inline-block;
+  font-weight: bold;
+  font-size: 2rem;
+  color: #625beb;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid #625beb;
+  width: 0;
+  animation: typing 3s steps(17) infinite, blink 0.7s step-end infinite;
+}
+
+@keyframes typing {
+  0% {
+    width: 0ch;
+  }
+  50% {
+    width: 17ch; 
+  }
+  100% {
+    width: 0ch;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.6s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c63d2, #667eea);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 99, 210, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 99, 210, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #4c63d2;
+            border: 2px solid #4c63d2;
+            padding: 13px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: #4c63d2;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+       
+    .hero-image {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      opacity: 0;
+      animation: fadeInRight 1s ease forwards;
+      animation-delay: 0.8s;
+    }
+
+    .robot-illustration {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, #a8b7ff, #c4b5fd);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden; 
+      animation: float 6s ease-in-out infinite;
+      box-shadow: 0 0 40px rgba(76, 99, 210, 0.3); 
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .robot-illustration img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      animation: rotate 30s linear infinite; 
+    }
+
+    /* Hover Effect */
+    .robot-illustration:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 60px rgba(76, 99, 210, 0.5);
+    }
+
+  
+  /* Stats Section */
+.stats {
+  min-height: auto;  
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 30px;   
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.05); 
+  border: 2px solid #d4d3d3; 
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  text-align: center;
+  padding: 20px 15px;
+  box-shadow: 0 2px 7px rgba(100, 100, 100, 0.3);
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  border-color: #e4d4ff; 
+}
+
+
+.card i {
+  font-size: 2rem;   
+  margin-bottom: 12px;
+  display: block;
+}
+
+.number {
+  font-size: 2rem;   
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.label {
+  font-size: 1rem;  
+}
+
+  
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+                flex-wrap: wrap;
+            }
+
+            .nav-center {
+                gap: 20px;
+            }
+
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 40px 20px;
+            }
+
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .robot-illustration {
+                width: 300px;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="logo">
+            <span class="logo-text">DEPI</span>
+        </a>
+        
+        <div class="nav-right">
+            <ul class="nav-center">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Home</a>
+                </li>
+            </ul>
+            <div class="dropdown" id="loginDropdown">
+                <button class="login-btn" onclick="toggleDropdown()">
+                    Login <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="{{url_for('std_log')}}" class="dropdown-item">Login as a Student</a>
+                    <a href="{{url_for('log_comp')}}" class="dropdown-item">Login as a Company</a>
+                    <a href="{{url_for('log_inst')}}" class="dropdown-item">Login as an Instructor</a>
+                    <a href="{{url_for('log_coor')}}" class="dropdown-item">Login as a Coordinator</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <p class="welcome-text">Welcome DEPI</p>
+            <h1 class="hero-title">
+                Welcome to the Digital Egypt Pioneers Platform <br>
+                Where Learning meets innovation<br>
+                <span class="accent">Building the Future.</span>
+            </h1>
+            <button class="btn-primary" onclick="document.getElementById('stats').scrollIntoView({ behavior: 'smooth' });">Start now</button>
+        </div>
+        <div class="hero-image">
+            <div class="robot-illustration">
+                 <img src="{{ url_for('static', filename='Art.png')}}" alt="Robot Illustration">
+            </div>
+        </div>
+    </section>
+
+<!-- Stats Section -->
+  <section id="stats" class="stats">
+    <div class="card">
+       <i class="fa-solid fa-graduation-cap"></i>
+      <div class="number" data-target="50000">0</div>
+      <div class="label">Students</div>
+    </div>
+    <div class="card">
+      <i class="fa-solid fa-person-chalkboard"></i>
+      <div class="number" data-target="1200">0</div>
+      <div class="label">Instructors</div>
+    </div>
+    <div class="card">
+      <i class="fa-solid fa-building"></i>
+      <div class="number" data-target="100">0</div>
+      <div class="label">Companies</div>
+    </div>
+    <div class="card">
+      <i class="fa-solid fa-laptop-code"></i>
+      <div class="number" data-target="100">0</div>
+      <div class="label">tracks</div>
+    </div>
+  </section>
+
+
+    <script>
+  function toggleDropdown() {
+    const dropdown = document.getElementById('loginDropdown');
+    dropdown.classList.toggle('active');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('loginDropdown');
+    const isClickInsideDropdown = dropdown.contains(event.target);
+    
+    if (!isClickInsideDropdown) {
+      dropdown.classList.remove('active');
+    }
+  });
+
+  // Ripple effect for buttons
+  document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.login-btn, .btn-primary, .btn-secondary');
+    
+    buttons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.6);
+          transform: scale(0);
+          animation: ripple 0.6s linear;
+          left: ${x}px;
+          top: ${y}px;
+          width: ${size}px;
+          height: ${size}px;
+          pointer-events: none;
+        `;
+        
+        this.style.position = 'relative';
+        this.style.overflow = 'hidden';
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+          if (ripple.parentNode) {
+            ripple.remove();
+          }
+        }, 600);
+      });
+    });
+
+    // Add CSS for ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes ripple {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  });
+
+  // Animated counters (auto loop)
+  function animateCounters() {
+    const counters = document.querySelectorAll(".number");
+
+    counters.forEach(counter => {
+      let count = 0;
+      const target = +counter.getAttribute("data-target");
+
+      setInterval(() => {
+        count++;
+        if (count > target) count = 0; // إعادة من الأول
+        counter.innerText = count;
+      }, 30); // سرعة العد
+    });
+  }
+
+  // Start counters immediately
+  animateCounters();
+
+
+    </script>
+</body>
+</html>
